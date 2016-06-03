@@ -45,13 +45,15 @@ try:
 except:
 	print("Unable to load text file")
 
-print("Num chars: ", count)
+print("Chars: ", count)
 
 # find char array dimensions
 # 144 = 19 * 6
 dims = 0
 while (((dims**2) * 144) < count):
 	dims += 1
+
+print("Dims: ", dims)
 
 # Put string into 2d array of same size as original image
 index = 0
@@ -100,13 +102,15 @@ for i in range(rows):
 
 canvas = Image.new("RGBA", img.size, (0, 0, 0, 0))
 draw = ImageDraw.Draw(canvas)
-font = ImageFont.truetype("COURIER.ttf", 32) # font size is dependent on what x is
+font = ImageFont.truetype("COURIER.ttf", 15) # font size is dependent on what x is
+
+print("=== Creating Image ===")
 
 index = 0
 x, y = 0, 0
 for i in range(rows):
 	for j in range(cols):
-		draw.text((x*20, y*24), char_arr[i][j], (colors[index].r, colors[index].g, colors[index].b), font = font) # spacing is dependent on what x is
+		draw.text((x*10, y*12), char_arr[i][j], (colors[index].r, colors[index].g, colors[index].b), font = font) # spacing is dependent on what x is
 		x += 1
 		index += 1
 	draw.text((0, 0), "\n", (0, 0, 0), font = font)
@@ -115,7 +119,7 @@ for i in range(rows):
 
 canvas.save("canvas.png", "PNG")
 
-print("=== Picture Saved ===")
+print("=== Image Saved ===")
 
 
 
