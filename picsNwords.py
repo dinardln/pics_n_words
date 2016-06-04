@@ -58,13 +58,11 @@ except:
 	print("Unable to load text file")
 print("Character count: ", count)
 
-# find char array dimensions
+# Find char array dimensions
 dims = 0
 while (((dims * 16) * (dims * 9)) < count):
 	dims += 1
 print("Dims: ", dims)
-
-# sys.exit()
 
 # Font size and spacing based on length of text file
 font_size, x_spc, y_spc = 0, 0, 0
@@ -73,7 +71,7 @@ if dims == 1:
 	x_spc = 120
 	y_spc = 120
 elif dims == 2:
-	font_size = 80 # 90 ?
+	font_size = 80 
 	x_spc = 60
 	y_spc = 62
 elif dims == 3:
@@ -108,7 +106,9 @@ elif dims == 10:
 	font_size = 18
 	x_spc = 12
 	y_spc = 12
-
+else:
+	print("File contains too many characters")
+	sys.exit()
 
 # Each cell contains 1 char
 cols = 16 * dims
@@ -160,9 +160,6 @@ for i in range(rows):
 # Create new image with transparent background 
 canvas = Image.new("RGBA", img.size, (0, 0, 0, 0))
 draw = ImageDraw.Draw(canvas)
-
-
-###### NEED FONT SIZE BASED ON DIMS #######
 font = ImageFont.truetype("COURIER.ttf", font_size) 
 
 # Print each char of the text file with the color of the cell avg
@@ -171,7 +168,6 @@ index = 0
 x, y = 0, 0
 for i in range(rows):
 	for j in range(cols):
-		###### 20, 24 ARE DEPENDENT ON DIMS #####
 		draw.text((x * x_spc, y * y_spc), char_arr[i][j], (colors[index].r, 
 		colors[index].g, colors[index].b), font = font)
 		x += 1
