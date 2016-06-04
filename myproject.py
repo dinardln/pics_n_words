@@ -1,23 +1,41 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# PICS 'N' WORDS															  #
+# Written by: Matt Peretick													  #
+# Contact: mattjp@umich.edu													  #
+#																			  #
+# Takes a 1920 x 1080 image and text file paths as inputs. The program then   #
+# reformats the text file as a rectangle with side length ratio of 16:9, with #
+# input text having the same colors as the picture input. It outputs a .png   #
+# file of the newly formatted and colored text. 							  #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 import os, sys
 import string
 from PIL import Image, ImageFilter, ImageDraw, ImageFont
 
+# Class to save average cell color
 class pixel:
 	r, g, b = 0, 0, 0
 
-# Get path to image
-ipath = input("Enter path to image: ")
+# Get and validate path to image
+ipath = input("Enter path to (1920x1080) image: ")
 if os.path.exists(ipath):
 	ifile = os.path.basename(ipath)
 	name, dot, ext = ifile.partition('.')
-	# if ext != "png":
-	# 	print("Invalid file extension")
-	# 	sys.exit()
+	try:
+		img = Image.open(ipath)
+		print("Image properties: ", img.format, img.size, img.mode)
+		if img.size != (1920, 1080):
+			print("Incorrect image dimensions")
+			sys.exit()
+	except:
+		print("Unable to load image")
+		sys.exit()
 else:
 	print("Path does not exist")
 	sys.exit()
 
-# Get path to text
+# Get and validate path to text
 tpath = input("Enter path to text file: ")
 if os.path.exists(tpath):
 	tfile = os.path.basename(tpath)
@@ -25,12 +43,6 @@ if os.path.exists(tpath):
 	if ext != "txt":
 		print("invalid file extension")
 		sys.exit()
-
-try:
-	img = Image.open(ipath)
-	print("Image properties: ", img.format, img.size, img.mode)
-except:
-	print("Unable to load image")
 
 # Write text file to a string
 try:
@@ -44,40 +56,76 @@ try:
 				content += cl_line
 except:
 	print("Unable to load text file")
-
-print("Chars: ", count)
+print("Character count: ", count)
 
 # find char array dimensions
-# 144 = 19 * 6
 dims = 0
-while (((dims**2) * 144) < count):
+while (((dims * 16) * (dims * 9)) < count):
 	dims += 1
-
 print("Dims: ", dims)
 
-# Put string into 2d array of same size as original image
-index = 0
+# sys.exit()
+
+# Font size and spacing based on length of text file
+font_size, x_spc, y_spc = 0, 0, 0
+if dims == 1:
+	font_size = 120
+	x_spc = 120
+	y_spc = 120
+elif dims == 2:
+	font_size = 80 # 90 ?
+	x_spc = 60
+	y_spc = 62
+elif dims == 3:
+	font_size = 60
+	x_spc = 40
+	y_spc = 39.5
+elif dims == 4:
+	font_size = 45
+	x_spc = 30
+	y_spc = 30
+elif dims == 5:
+	font_size = 40
+	x_spc = 24
+	y_spc = 23.5
+elif dims == 6:
+	font_size = 32
+	x_spc = 20
+	y_spc = 19.5
+elif dims == 7:
+	font_size = 24
+	x_spc = 17.15
+	y_spc = 17
+elif dims == 8:
+	font_size = 22
+	x_spc = 15
+	y_spc = 15
+
+
+# Each cell contains 1 char
 cols = 16 * dims
 rows = 9 * dims
-xpx = 1920 / cols # 20
-ypx = 1080 / rows # 20 
 
-cur_r, cur_c = 0, 0 # 0 < r < rows
+# Cell size in pixels to determine char color
+xpx = 1920 / cols 
+ypx = 1080 / rows 
 
-rgb_img = img.convert("RGB")
+# List to hold char colors 
+colors = [] 
 
-colors = [] # holds avg pixel color for each char
-
+# Find and save avg pixel color for each cell in the image
 print("=== Processing Picture ===")
-
-# find and save average pixel color for a region of the image
+rgb_img = img.convert("RGB")
+cur_r, cur_c = 0, 0 
 for r in range(int(round(rows))):
 	for c in range(int(round(cols))): 
 		x = cur_c * xpx
 		y = cur_r * ypx
 		tot_r, tot_g, tot_b = 0, 0, 0
-		for y in range(int(round(cur_r * ypx)), int(round((cur_r * ypx) + ypx))):
-			for x in range(int(round(cur_c * xpx)), int(round((cur_c * xpx) + xpx))):
+		for y in range(int(round(cur_r * ypx)), 
+			int(round((cur_r * ypx) + ypx))):
+			for x in range(int(round(cur_c * xpx)), 
+				int(round((cur_c * xpx) + xpx))):
 				r, g, b = rgb_img.getpixel((x, y))
 				tot_r += r
 				tot_g += g
@@ -90,9 +138,10 @@ for r in range(int(round(rows))):
 		cur_c += 1
 	cur_r += 1
 	cur_c = 0
-
 print("=== Picture Processed ===")
 
+# Init 2D list. Each entry is 1 char of the text file
+index = 0
 char_arr = [[' ' for c in range(cols)] for r in range(rows)]
 for i in range(rows):
 	for j in range(cols):
@@ -100,38 +149,29 @@ for i in range(rows):
 			char_arr[i][j] = content[index]
 			index += 1
 
+# Create new image with transparent background 
 canvas = Image.new("RGBA", img.size, (0, 0, 0, 0))
 draw = ImageDraw.Draw(canvas)
-font = ImageFont.truetype("COURIER.ttf", 15) # font size is dependent on what x is
 
+
+###### NEED FONT SIZE BASED ON DIMS #######
+font = ImageFont.truetype("COURIER.ttf", font_size) 
+
+# Print each char of the text file with the color of the cell avg
 print("=== Creating Image ===")
-
 index = 0
 x, y = 0, 0
 for i in range(rows):
 	for j in range(cols):
-		draw.text((x*10, y*12), char_arr[i][j], (colors[index].r, colors[index].g, colors[index].b), font = font) # spacing is dependent on what x is
+		###### 20, 24 ARE DEPENDENT ON DIMS #####
+		draw.text((x * x_spc, y * y_spc), char_arr[i][j], (colors[index].r, 
+		colors[index].g, colors[index].b), font = font)
 		x += 1
 		index += 1
 	draw.text((0, 0), "\n", (0, 0, 0), font = font)
 	x = 0
 	y += 1
 
+# Save the image as "canvas.png"
 canvas.save("canvas.png", "PNG")
-
 print("=== Image Saved ===")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
