@@ -1,6 +1,5 @@
 # Pics 'n' Words
+## A python project that smashes together words & pictures
 ![alt tag](https://github.com/mattjp/pics_n_words/blob/master/canvas.png)
-Python project that takes a 1920 x 1080 image and a .txt file as inputs, and outputs the same image made out of colored text.
-The program creates a transparent image of the same dimensions as the image with the text from the file on layered on top of it.
-Each character from the text file is colored the same as that area of the original image.
-The text is formatted as a rectangle with edge dimension ratio of 16:9, with spaces appended to make the number of characters in the text file a multiple of 144.
+This image was made by running the program with block_m.png and output.txt
+#### To use, just run the file "myproject.py" with "COURIER.TTF" saved in the same directory as "myproject.py" then use a .txt file and 1920 x 1080 image as your inputs and voila!
