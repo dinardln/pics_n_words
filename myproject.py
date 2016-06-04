@@ -100,6 +100,14 @@ elif dims == 8:
 	font_size = 22
 	x_spc = 15
 	y_spc = 15
+elif dims == 9:
+	font_size = 20
+	x_spc = 13.35
+	y_spc = 13.3
+elif dims == 10:
+	font_size = 18
+	x_spc = 12
+	y_spc = 12
 
 
 # Each cell contains 1 char
