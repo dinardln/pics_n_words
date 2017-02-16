@@ -11,7 +11,43 @@
 
 import os, sys
 import string
+import random
 from PIL import Image, ImageFilter, ImageDraw, ImageFont
+
+def random_colors(colors) :
+
+	my_color_dic = {}
+
+	for color in colors :
+		my_str = str(color.r) + str(color.g) + str(color.b)
+		try :
+			my_color_dic[my_str].append(color)
+		except KeyError:
+			my_color_dic[my_str] = []
+			my_color_dic[my_str].append(color)
+
+	new_colors = []
+
+	for my_str_clr in my_color_dic :
+		r = random.randint(0, 255)
+		g = random.randint(0, 255)
+		b = random.randint(0, 255)
+		print(r, g, b)
+		for my_color in my_color_dic[my_str] :
+			my_color.r = r
+			my_color.g = g
+			my_color.b = b
+			new_colors.append(my_color)
+
+	for color in colors :
+		my_str = str(color.r) + str(color.g) + str(color.b)
+		try:
+			color = my_color_dic[my_str][0]
+		except KeyError:
+			continue
+
+	
+	return colors
 
 # Class to save average cell color
 class pixel:
@@ -161,6 +197,7 @@ for i in range(rows):
 canvas = Image.new("RGBA", img.size, (0, 0, 0, 0))
 draw = ImageDraw.Draw(canvas)
 font = ImageFont.truetype("COURIER.ttf", font_size) 
+colors = random_colors(colors)
 
 # Print each char of the text file with the color of the cell avg
 print("=== Creating Image ===")
@@ -179,3 +216,7 @@ for i in range(rows):
 # Save the image as "canvas.png"
 canvas.save("canvas.png", "PNG")
 print("=== Image Saved ===")
+
+
+
+	
